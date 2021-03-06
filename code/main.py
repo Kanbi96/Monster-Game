@@ -93,6 +93,7 @@ class Game(Window):
                 for event in pygame.event.get():
                     self.event_click(event, (302, 190), (398, 285), "main_menu")
                     self.event_click(event, (293, 430), (406, 446), "admin_password")
+                    self.event_click(event, (650, 28), (669, 46), "settings")
                     self.event_quit(event)
 
     def event_add_user(self):
@@ -214,6 +215,7 @@ class Game(Window):
     
     def event_settings_menu(self):
         self.new_page("設定", (40, 43, 48))
+        self.add_text("設定", 20, (35, 20), "黑體粗")
 
     def story_0(self):
         """

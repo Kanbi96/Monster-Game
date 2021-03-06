@@ -115,6 +115,7 @@ class Window(pygame.sprite.Sprite):
         """
         class InputBox
         """
+
         InputBox(250, 250, 140, 32)
 
         while True:
@@ -133,6 +134,7 @@ class Window(pygame.sprite.Sprite):
     def new_page(self, title, color):
         self.surface.fill(color)
         pygame.display.set_caption(f"{self.title} - {title}")
+        pygame.display.update()
 
 
 class Tkinter_Window():

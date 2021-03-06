@@ -13,7 +13,9 @@ class Database():
             "userinfo": ("(NAME text, ID integer, PROGRESS integer)",
                          "(?, ?, ?)"),
             "settings": ("(STORY text)", "(?)"),
-            # "settings": ("(AT integer, DE integer)", "(?, ?)"),
+
+            # 角色能力
+            # "role": ("()", "()"),
         }
     
     def dbinit(self, filename, data, user=""):
@@ -90,4 +92,4 @@ class Database():
             return word
 
 if __name__ == "__main__":
-    pass
+    print("This is the Database class.")
