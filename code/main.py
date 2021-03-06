@@ -16,10 +16,10 @@ class Game(Window):
     To-Do:
 
     - InputBox
-    - game center
+    - game center 設定
     - 設定選單
     - 細節部分
-      ．名稱文字至中問題
+      ．文字至中
     """
 
     def __init__(self):
@@ -68,13 +68,13 @@ class Game(Window):
         self.add_text(f"＞　進入管理員模式", 12, (295, 430), "黑體")
 
         # 設定按鈕 | 未完成
-        self.add_image("./res/images/settings.png", (20, 20), 650, 30)
+        self.add_image("./res/images/settings.png", (20, 20), (650, 30))
 
         # 選擇使用者
         self.add_text(f"請選擇使用者", 26, (275, 110), "黑體")
 
         if d.get_data("users") == "[資料庫] 錯誤 > 找不到資料庫或資料庫已毀損":
-            self.add_image("./res/images/empty_player.png", (100, 125), 300, 185)
+            self.add_image("./res/images/empty_player.png", (100, 125), (300, 185))
 
             while True:
                 for event in pygame.event.get():
@@ -86,7 +86,7 @@ class Game(Window):
             # 文字至中問題 | 未完成
 
             self.username = d.get_data("users")[0]
-            self.add_image("./res/images/player.png", (100, 125), 300, 185)
+            self.add_image("./res/images/player.png", (100, 125), (300, 185))
             self.add_text(self.username, 20, (335, 300), "黑體")
 
             while True:
@@ -118,8 +118,8 @@ class Game(Window):
             self.new_page("新增使用者", (40, 43, 48))
             self.add_text(f"玩家名稱", 15, (250, 225), "黑體")
             self.add_text(f"＊　輸入後按 Enter", 12, (295, 430), "黑體")
-            self.add_image("./res/images/new_users.png", (75, 75), 320, 110)
-            self.add_image("./res/images/back.png", (20, 20), 650, 30)
+            self.add_image("./res/images/new_users.png", (75, 75), (320, 110))
+            self.add_image("./res/images/back.png", (20, 20), (650, 30))
 
             for box in input_boxes:
                 box.update()
@@ -134,8 +134,8 @@ class Game(Window):
         self.new_page("新增使用者", (40, 43, 48))
         self.add_text(f"{self.title} {self.version}", 20, (35, 20), "黑體粗")
         self.add_text(f"確定要取名為 {username} 嗎？", 20, (250, 200), "黑體")
-        self.add_image("./res/images/newuser_button.png", (94, 38), 300, 250)
-        self.add_image("./res/images/back.png", (20, 20), 650, 30)
+        self.add_image("./res/images/newuser_button.png", (94, 38), (300, 250))
+        self.add_image("./res/images/back.png", (20, 20), (650, 30))
         self.username = username
 
         while True:
@@ -167,7 +167,7 @@ class Game(Window):
         while True:
             self.add_text("管理員模式", 20, (35, 20), "黑體粗")
             self.add_text("請輸入密碼", 26, (283, 110), "黑體粗")
-            self.add_image("./res/images/back.png", (20, 20), 650, 30)
+            self.add_image("./res/images/back.png", (20, 20), (650, 30))
 
             # 輸入框/提示
             self.add_text(f"＊　輸入後按 Enter", 12, (295, 430), "黑體")
@@ -185,8 +185,10 @@ class Game(Window):
                     sleep(1)
                     password = None
                 else:
-                    # 未完成
-                    pass
+                    pygame.quit()
+                    os.system("python ./code/admin.py")
+                    self.__init__()
+                    self.event_users()
 
             self.new_page("管理員模式密碼", (40, 43, 48))
             for box in input_boxes:
@@ -203,11 +205,11 @@ class Game(Window):
 
         self.add_text(f"{self.title} {self.version}", 20, (190, 20), "黑體粗")
 
-        self.add_image("./res/images/gray_background.png", (150, 480), 0, 0)
-        self.add_image("./res/images/news.png", (485, 250), 192, 94)
-        self.add_image("./res/images/player.png", (30, 40), 645, 20)
-        self.add_image("./res/images/start_button.png", (110, 35), 368, 409)
-        self.add_image("./res/images/settings.png", (20, 20), 45, 418)
+        self.add_image("./res/images/gray_background.png", (150, 480), (0, 0))
+        self.add_image("./res/images/news.png", (485, 250), (192, 94))
+        self.add_image("./res/images/player.png", (30, 40), (645, 20))
+        self.add_image("./res/images/start_button.png", (110, 35), (368, 409))
+        self.add_image("./res/images/settings.png", (20, 20), (45, 418))
         self.add_text("設定", 15, (75, 417), "黑體粗")
     
     def event_settings_menu(self):

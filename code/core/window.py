@@ -33,7 +33,8 @@ class InputBox:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
-                self.txt_surface = self.FONT.render(self.text, True, self.color)
+                self.txt_surface = self.FONT.render(
+                    self.text, True, self.color)
 
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
@@ -99,15 +100,15 @@ class Window(pygame.sprite.Sprite):
         self.surface.blit(text_surface, coordinate)
         pygame.display.update()
 
-    def add_image(self, image, size, x, y):
+    def add_image(self, path, size, coordinate):
         """
-        Still in dev.
+        * coordinate/size 須回傳 tuple
         """
 
-        raw_image = pygame.image.load(image).convert_alpha()
+        raw_image = pygame.image.load(path).convert_alpha()
         image = pygame.transform.scale(raw_image, size)
 
-        self.surface.blit(image, (x, y))
+        self.surface.blit(image, coordinate)
         pygame.display.update()
 
     def add_inputbox(self, text, size, coordinate, font="黑體", color="WHITE"):
@@ -115,7 +116,7 @@ class Window(pygame.sprite.Sprite):
         class InputBox
         """
         InputBox(250, 250, 140, 32)
-    
+
         while True:
             box.handle_event(event)
 
@@ -128,10 +129,15 @@ class Window(pygame.sprite.Sprite):
 
             pygame.display.flip()
             clock.tick(70)
-    
+
     def new_page(self, title, color):
         self.surface.fill(color)
         pygame.display.set_caption(f"{self.title} - {title}")
+
+
+class Tkinter_Window():
+    def __init__(self):
+        pass
 
 
 if __name__ == "__main__":
