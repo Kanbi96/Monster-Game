@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimum-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Python Level 2 Project">
+    <meta name="author" content="Master Bug">
+    <title>程式原始碼 | 打怪遊戲</title>
+    <link rel="icon" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="../static/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/tomorrow-night.min.css">
+    <link rel="stylesheet" href="../static/main.css?201129">
+    <link rel="canonical" href="https://pyone.tw/">
+  </head>
+
+  <body>
+
+    <div class="container">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container">
+          <h1 class="navbar-brand">打怪遊戲</h1>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item"> <a class="nav-link" href="../">首頁</a> </li>
+              <li class="nav-item"> <a class="nav-link" href="../usage/">開發進度</a> </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link active dropdown-toggle" href="../code/" id="navbardrop" data-toggle="dropdown">
+                  程式原始碼
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#main">用戶端</a>
+                  <a class="dropdown-item" href="#window">視窗模組</a>
+                  <a class="dropdown-item" href="#database">資料庫模組</a>
+                </div>
+              </li>
+              <li class="nav-item"> <a class="nav-link" href="../database/">資料庫</a> </li>
+              
+              
+              <li class="nav-item"> <a class="nav-link" href="https://github.com/micropyone/toeic-words" target="_blank">GitHub</a> </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <main role="main">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="page-title">程式原始碼</h2>
+            </div>
+        </div>
+
+        <div class="page-section" id="main"></div>
+        <h3 class="text-center"><span>用戶端</span></h3>
+        <pre>
+            <code class="python">import os
+import sqlite3
+import sys
+import pygame
+from core.window import Window, InputBox
+from core.database import Database
+from pygame.locals import Color, QUIT, MOUSEBUTTONDOWN, USEREVENT, USEREVENT
+
+d = Database()
+
+
+class Game(Window):
+
+    def __init__(self):
+        self.title = "打怪遊戲"
+        self.version = ""
+
+        super().__init__(self.title)
+
+        self.story_game = {
+            "1-0": "遊戲教學"
+        }
+
+        self.events = {
+            "start_button": lambda: self.event_start_button(),
+            "add_user": lambda: self.event_add_user(),
+            "users": lambda: self.event_users(),
+            "add_user_to_users": lambda: self.event_user_database(),
+            "back_name": lambda: self.event_add_user(),
+            "main_menu": lambda: self.event_main_menu(),
+            "admin_password": lambda: self.event_admin_button()
+        }
+
+    def event_click(self, event, pos1, pos2, action, obj=None):
+        if event.type == MOUSEBUTTONDOWN:
+            if pos1[0] < pygame.mouse.get_pos()[0] < pos2[0] and pos1[1] < pygame.mouse.get_pos()[1] < pos2[1]:
+                if obj != None:
+                    self.events[action](obj)
+                else:
+                    self.events[action]()
+
+            # 除錯用
+            else:
+                print(pygame.mouse.get_pos())
+
+    def event_quit(self, event):
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+    def event_users(self):
+        self.new_page("選擇使用者", (40, 43, 48))
+        self.add_text(f"{self.title} {self.version}", 20, (35, 20), "黑體粗")
+
+        # 進入管理員模式 | 未完成
+        self.add_text(f"＞　進入管理員模式", 12, (295, 430), "黑體")
+
+        # 設定按鈕 | 未完成
+        self.add_image("./res/images/settings.png", (20, 20), 650, 30)
+
+        # 選擇使用者
+        self.add_text(f"請選擇使用者", 26, (275, 110), "黑體")
+
+        if d.get_data("users") == "[資料庫] 錯誤 > 找不到資料庫或資料庫已毀損":
+            self.add_image("./res/images/empty_player.png", (100, 125), 300, 185)
+
+            while True:
+                for event in pygame.event.get():
+                    self.event_click(event, (302, 190), (398, 285), "add_user")
+                    self.event_click(event, (293, 430), (406, 446), "admin_password")
+                    self.event_quit(event)
+        else:
+            # 文字至中問題 | 未完成
+
+            self.username = d.get_data("users")[0]
+            self.add_image("./res/images/player.png", (100, 125), 300, 185)
+            self.add_text(self.username, 20, (335, 300), "黑體")
+
+            while True:
+                for event in pygame.event.get():
+                    self.event_click(event, (302, 190), (398, 285), "main_menu")
+                    self.event_click(event, (293, 430), (406, 446), "admin_password")
+                    self.event_quit(event)
+
+    def event_add_user(self):
+        self.new_page("新增使用者", (40, 43, 48))
+        clock = pygame.time.Clock()
+        input_box1 = InputBox(250, 250, 140, 32)
+        input_boxes = [input_box1]
+        username = None
+
+        while True:
+            self.add_text(f"{self.title} {self.version}", 20, (35, 20), "黑體粗")
+
+            for event in pygame.event.get():
+                self.event_quit(event)
+                self.event_click(event, (650, 28), (669, 45), "users")
+                for box in input_boxes:
+                    username = box.handle_event(event)
+
+            if username is not None:
+                print(username)
+                break
+
+            self.new_page("新增使用者", (40, 43, 48))
+            self.add_text(f"玩家名稱", 15, (250, 225), "黑體")
+            self.add_text(f"＊　輸入後按 Enter", 12, (295, 430), "黑體")
+            self.add_image("./res/images/new_users.png", (75, 75), 320, 110)
+            self.add_image("./res/images/back.png", (20, 20), 650, 30)
+
+            for box in input_boxes:
+                box.update()
+
+            for box in input_boxes:
+                box.draw(self.surface)
+
+            pygame.display.flip()
+            clock.tick(1000)
+
+        # 輸入名字後
+        self.new_page("新增使用者", (40, 43, 48))
+        self.add_text(f"{self.title} {self.version}", 20, (35, 20), "黑體粗")
+        self.add_text(f"確定要取名為 {username} 嗎？", 20, (250, 200), "黑體")
+        self.add_image("./res/images/newuser_button.png", (94, 38), 300, 250)
+        self.add_image("./res/images/back.png", (20, 20), 650, 30)
+        self.username = username
+
+        while True:
+            for event in pygame.event.get():
+                self.event_quit(event)
+                self.event_click(event, (299, 250),
+                                    (391, 285), "add_user_to_users")
+                self.event_click(event, (650, 28), (669, 45), "back_name")
+
+    def event_user_database(self):
+        d = Database()
+        d.dbinit("users", (self.username,))
+        self.event_users()
+
+    def event_start_button(self):
+        # story_game = "1-0"
+        # pygame.display.set_caption(
+        #     f"{self.title} - {self.story_game[story_game]}")
+        # pygame.display.update()
+        print("開始遊戲")
+
+    def event_admin_button(self):
+        clock = pygame.time.Clock()
+        input_box1 = InputBox(250, 250, 140, 32)
+        input_boxes = [input_box1]
+        password = None
+
+        while True:
+            self.add_text("管理員模式", 20, (35, 20), "黑體粗")
+            self.add_text("請輸入密碼", 26, (283, 110), "黑體粗")
+            self.add_image("./res/images/back.png", (20, 20), 650, 30)
+
+            # 輸入框/提示
+            self.add_text(f"＊　輸入後按 Enter", 12, (295, 430), "黑體")
+
+            for event in pygame.event.get():
+                self.event_quit(event)
+                self.event_click(event, (650, 28), (669, 45), "users")
+                for box in input_boxes:
+                    password = box.handle_event(event)
+
+            if password is not None:
+                print(username)
+                break
+
+            self.new_page("管理員模式密碼", (40, 43, 48))
+            for box in input_boxes:
+                box.update()
+
+            for box in input_boxes:
+                box.draw(self.surface)
+
+            pygame.display.flip()
+            clock.tick(70)
+
+    def event_main_menu(self):
+        self.new_page("遊戲主選單", (40, 43, 48))
+
+        self.add_text(f"{self.title} {self.version}", 20, (190, 20), "黑體粗")
+
+        self.add_image("./res/images/gray_background.png", (150, 480), 0, 0)
+        self.add_image("./res/images/news.png", (485, 250), 192, 94)
+        self.add_image("./res/images/player.png", (30, 40), 645, 20)
+        self.add_image("./res/images/start_button.png", (110, 35), 368, 409)
+        self.add_image("./res/images/settings.png", (20, 20), 45, 418)
+        self.add_text("設定", 15, (75, 417), "黑體粗")
+        
+
+    def story_0(self):
+        pass
+
+
+def main():
+    g = Game()
+    g.event_users()
+
+
+if __name__ == "__main__":
+    main()                
+
+            </code>
+        </pre>
+        <div class="page-section" id="window"></div>
+        <h3 class="text-center"><span>視窗模組</span></h3>
+        <pre>
+            <code class="python">import pygame
+from pygame.locals import Color, QUIT, MOUSEBUTTONDOWN, USEREVENT, USEREVENT
+
+
+class InputBox:
+
+    def __init__(self, x, y, w, h, text=''):
+        pygame.init()
+
+        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
+        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
+        self.FONT = pygame.font.Font(None, 32)
+
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = self.COLOR_INACTIVE
+        self.text = text
+        self.txt_surface = self.FONT.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            self.color = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                print(event.key)
+                if event.key == pygame.K_RETURN:
+                    return self.text
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                self.txt_surface = self.FONT.render(self.text, True, self.color)
+
+    def update(self):
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+
+class Window(pygame.sprite.Sprite):
+
+    def __init__(self, title, toggle=True):
+        """
+        * 變數說明
+            - window_width > 視窗寬度
+            - window_height > 視窗高度
+            - title > 標題
+            - surface > Pygame object
+        """
+
+        if toggle == False:
+            return
+
+        super().__init__()
+        pygame.init()
+
+        self.title = title
+        self.window_width = 720
+        self.window_height = 480
+        self.surface = pygame.display.set_mode(
+            (self.window_width, self.window_height))
+
+        pygame.display.set_caption(self.title)
+        pygame.display.set_icon(
+            pygame.image.load("./res/images/game_icon.png"))
+
+        self.surface.fill((40, 43, 48))
+        pygame.display.update()
+
+        self.fonts = {
+            "黑體細": "./res/fonts/NotoSansCJKtc-Light.otf",
+            "黑體": "./res/fonts/NotoSansCJKtc-Regular.otf",
+            "黑體粗": "./res/fonts/NotoSansCJKtc-Medium.otf",
+        }
+
+        self.color = {
+            "WHITE": (255, 255, 255),
+            "BLACK1": (0, 0, 0),
+            "BLACK2": (40, 43, 48),
+            "BLACK3": (54, 57, 63)
+        }
+
+    def add_text(self, text, size, coordinate, font="黑體", color="WHITE"):
+        """
+        * coordinate 須回傳 tuple
+        * font 均使用思源黑體（黑體細、黑體、黑體粗）
+        """
+
+        font = self.fonts[font]
+        head_font = pygame.font.Font(font, size)
+        text_surface = head_font.render(text, True, self.color[color])
+        self.surface.blit(text_surface, coordinate)
+        pygame.display.update()
+
+    def add_image(self, image, size, x, y):
+        """
+        Still in dev.
+        """
+
+        raw_image = pygame.image.load(image).convert_alpha()
+        image = pygame.transform.scale(raw_image, size)
+
+        self.surface.blit(image, (x, y))
+        pygame.display.update()
+
+    def add_inputbox(self, text, size, coordinate, font="黑體", color="WHITE"):
+        """
+        class InputBox
+        """
+        InputBox(250, 250, 140, 32)
+    
+        while True:
+            box.handle_event(event)
+
+            pygame.display.update()
+            for box in input_boxes:
+                box.update()
+
+            for box in input_boxes:
+                box.draw(self.surface)
+
+            pygame.display.flip()
+            clock.tick(70)
+    
+    def new_page(self, title, color):
+        self.surface.fill(color)
+        pygame.display.set_caption(f"{self.title} - {title}")
+
+
+if __name__ == "__main__":
+    pass
+
+            </code>
+        <div class="page-section" id="database"></div>
+        <h3 class="text-center"><span>資料庫模組</span></h3>
+        <pre>
+            <code class="python">import os
+import sqlite3
+
+
+class Database():
+
+    def __init__(self):
+        self.datatype = {
+            # 使用者
+            "users": ("(NAME text)", "(?)"),
+
+            # 使用者資料
+            "userinfo": ("(NAME text, ID integer, PROGRESS integer)",
+                            "(?, ?, ?)"),
+            "settings": ("(STORY text)", "(?)"),
+            # "settings": ("(AT integer, DE integer)", "(?, ?)"),
+        }
+    
+    def dbinit(self, filename, data, user=""):
+        """
+        資料庫初始化
+        * filename > 文件名稱 (無須加副檔名 .db)
+        * data > 放入資料 (請參考 self.datatype)
+        * user > 適用之使用者 (留白則為全體共用)
+        """
+
+        if user == "":
+            try:
+                os.unlink(f"./data/{filename}.db")
+            except FileNotFoundError:
+                pass
+
+            conn = sqlite3.connect(f"./data/{filename}.db")
+        else:
+            try:
+                os.unlink(f"./data/{user}/{filename}.db")
+            except FileNotFoundError:
+                pass
+
+            conn = sqlite3.connect(f"./data/{user}/{filename}.db")
+
+        cur = conn.cursor()
+
+        cur.execute(f"""CREATE TABLE {filename.upper()}
+            {self.datatype[filename][0]}""")
+        conn.commit()
+
+        fn = filename.upper()
+        ft = self.datatype[filename][1]
+
+        cur.execute(f"INSERT INTO {fn} VALUES {ft}", data)
+        conn.commit()
+
+        conn.close()
+
+    def get_data(self, filename, user=""):
+        """
+        獲取資料庫資料
+        * filename > 文件名稱 (無須加副檔名 .db)
+        * user > 使用者名稱 (留白則自動導向至 data 資料夾)
+        """
+
+        try:
+            if user == "":
+                conn = sqlite3.connect(f"./data/{filename}.db")
+                cur = conn.cursor()
+            else:
+                while True:
+                    try:
+                        conn = sqlite3.connect(f"./data/{user}/{filename}.db")
+                        cur = conn.cursor()
+                        break
+                    except sqlite3.OperationalError:
+                        os.makedirs(f"./data/{user}")
+            cur.execute(f"SELECT * FROM {filename.upper()}")
+        except sqlite3.OperationalError:
+            conn.close()
+            if user == "":
+                os.unlink(f"./data/{filename}.db")
+            else:
+                os.unlink(f"./data/{user}/{filename}.db")
+            return "[資料庫] 錯誤 > 找不到資料庫或資料庫已毀損"
+
+        for word in cur.fetchall():
+            if word is None:
+                return "[資料庫] 錯誤 > 資料庫損毀，請重新建置"
+            return word
+
+if __name__ == "__main__":
+    pass
+
+            </code>
+        </pre>
+        <div class="page-section" id="setup"></div>
+        <h3 class="text-center"><span>遊戲執行檔</span></h3>
+        <pre>
+            <code class="python">@echo off
+C:\Python\38\python.exe ./code/main.py
+      </main>
+
+      <hr>
+      <footer class="footer">
+        <p>&copy; 碼寶程式教育中心</p>
+      </footer>
+    </div> <!-- /container -->
+
+    <script src="../static/jquery.slim.min.js"></script>
+    <script src="../static/popper.min.js"></script>
+    <script src="../static/bootstrap.min.js"></script>
+    <script src="../static/highlight.min.js"></script>
+    <script src="../static/highlightjs-line-numbers.min.js"></script>
+    <script src="../static/main.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        hljs.initLineNumbersOnLoad();
+    </script>
+  </body>
+</html>

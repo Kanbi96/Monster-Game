@@ -1,0 +1,162 @@
+body, button, html, input, select, textarea {
+    font-family: "Microsoft JhengHei";
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+}
+
+pre code {
+    font-size: 18px !important;
+    padding-left: -80px;
+}
+
+.navbar-brand {
+    color: #4fccaf !important;
+    font-size: 20px;
+}
+
+.navbar-nav .nav-item .nav-link {
+    margin: 6px 0;
+    padding: 6px 12px;
+    color: #c0c0c0;
+}
+
+.navbar-nav .nav-item .nav-link.active {
+    border: solid 1px #fff;
+    border-radius: 3px;
+}
+
+h2.page-title {
+    margin: 100px 0 10px;
+    font-size: 36px;
+    padding: 20px;
+    background-color: #daf0eb;
+    border-radius: 3px;
+}
+
+.page-section {
+    padding: 100px 0 10px;
+}
+
+.page-section + h3 span {
+    color: #fff;
+    background-color: #007bff;
+    padding: 10px 20px;
+    border-radius: 3px;
+}
+
+footer {
+    margin: 30px 0 40px 0;
+}
+
+h1.header-title {
+    padding: 5px 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+ol.note li {
+    font-size: 18px;
+}
+
+ul.note li {
+    font-size: 18px;
+    list-style-type: square
+}
+
+.jumbotron {
+    margin-top: 80px;
+    background-color: #3ab598;
+}
+
+.jumbotron h2 {
+    color: #fff;
+}
+
+.jumbotron p.lead {
+    color: #e3fbf5;
+}
+
+.small-sec {
+    margin: 100px 0 10px;
+}
+.small-sec span {
+    color: #fff;
+    background-color: #28a745;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.dbtable-name,
+.intro-title {
+    margin: 80px 0 10px;
+}
+
+.intro-code {
+    color: #fff;
+    background-color: #282923;
+    border-radius: 3px;
+}
+
+.dbtable-name div {
+    width: 50%;
+    margin: auto;
+    margin-bottom: 30px;
+    padding: 10px;
+    border: solid 1px #999;
+    border-radius: 3px;
+
+}
+
+.dbtable-name + div table * {
+    font-size: 18px;
+}
+
+.text-desc {
+    color: #333;
+    background-color: #eee;
+    font-weight: 400;
+    padding: 20px;
+    border-radius: 3px;
+}
+
+.table-schema tr td:nth-child(1) {
+    width: 30%;
+}
+.table-schema tr td:nth-child(2) {
+    width: 20%;
+}
+.table-schema tr td:nth-child(3) {
+    width: 50%;
+}
+
+.table-adict {
+    font-size: 18px;
+}
+
+.extra-links div {
+    padding: 10px;
+}
+
+
+/* for block of numbers */
+.hljs-ln td.hljs-ln-numbers {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    text-align: center;
+    color: #eee !important;
+    border-right: 1px solid #eee;
+    vertical-align: top;
+    padding-right: 5px;
+    /* your custom style here */
+}
+
+/* for block of code */
+.hljs-ln td.hljs-ln-code {
+    padding-left: 10px;
+}
