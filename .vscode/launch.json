@@ -1,0 +1,14 @@
+{
+    // 仍在開發中
+
+    "version": "",
+    "configurations": [
+        {
+            "name": "執行遊戲",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
